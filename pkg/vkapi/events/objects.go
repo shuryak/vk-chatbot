@@ -1,0 +1,84 @@
+package events
+
+type ClientInfo struct {
+	ButtonActions  []string `json:"button_actions"`
+	Keyboard       bool     `json:"keyboard"`
+	InlineKeyboard bool     `json:"inline_keyboard"`
+	Carousel       bool     `json:"carousel"`
+	LangId         int      `json:"lang_id"`
+}
+
+type Message struct {
+	ID          int                 `json:"id"`
+	Date        int                 `json:"date"`
+	PeerID      int                 `json:"peer_id"`
+	FromID      int                 `json:"from_id"`
+	Text        string              `json:"text"`
+	RandomID    int                 `json:"random_id"`
+	Attachments []MessageAttachment `json:"attachments"`
+	Important   bool                `json:"important"`
+	Payload     string              `json:"payload"`
+	// TODO: Keyboard (https://vk.com/dev/bots_docs_3?f=4.+Клавиатуры+для+ботов)
+	FwdMessages           []Message     `json:"fwd_messages"`
+	ReplyMessage          *Message      `json:"reply_message"`
+	Action                MessageAction `json:"action"`
+	AdminAuthorID         int           `json:"admin_author_id"`
+	ConversationMessageID int           `json:"conversation_message_id"`
+	IsCropped             bool          `json:"is_cropped"`
+	MembersCount          int           `json:"members_count"`
+	UpdateTime            int           `json:"update_time"`
+	WasListened           bool          `json:"was_listened"`
+	PinnedAt              int           `json:"pinned_at"`
+	MessageTag            string        `json:"message_tag"`
+
+	// TODO: full compliance with the docs (https://vk.com/dev/objects/message)
+}
+
+type Photo struct {
+	ID      int    `json:"id"` // Photo ID
+	AlbumID int    `json:"album_id"`
+	OwnerID int    `json:"owner_id"`
+	UserId  int    `json:"user_id"`
+	Text    string `json:"text"`
+	Date    int    `json:"date"`
+	// TODO: Sizes (https://vk.com/dev/objects/photo)
+
+	Width  int `json:"width"`
+	Height int `json:"height"`
+}
+
+type Sticker struct {
+	ProductID int `json:"product_id"`
+	StickerID int `json:"sticker_id"`
+	// TODO: Images, ImagesWithBackground (https://vk.com/dev/objects/sticker)
+
+	AnimationURL string `json:"animation-url"`
+	IsAllowed    bool   `json:"is_allowed"`
+}
+
+type MessageAttachment struct {
+	Photo   Photo   `json:"photo"`
+	Sticker Sticker `json:"sticker"`
+	// TODO: full compliance with the docs (https://vk.com/dev/objects/attachments_m)
+
+	Type string `json:"type"`
+}
+
+type MessageAction struct {
+	Type     string             `json:"type"`
+	MemberId int                `json:"member_id"`
+	Text     string             `json:"text"`
+	Email    string             `json:"email"`
+	Photo    MessageActionPhoto `json:"photo"`
+}
+
+type MessageActionPhoto struct {
+	Photo50  string `json:"photo_50"`
+	Photo100 string `json:"photo_100"`
+	Photo200 string `json:"photo_200"`
+}
+
+type MessageNewObject struct {
+	Message    Message    `json:"message"`
+	ClientInfo ClientInfo `json:"client_info"`
+}
