@@ -39,3 +39,8 @@ func (b *MessagesSendBuilder) Keyboard(v interface{}) *MessagesSendBuilder {
 	b.Params["keyboard"] = v
 	return b
 }
+
+func (b *MessagesSendBuilder) Attachment(v string) *MessagesSendBuilder {
+	b.Params["attachment"] = v
+	return b
+}

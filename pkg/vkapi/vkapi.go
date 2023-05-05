@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/doc"
+	"github.com/shuryak/vk-chatbot/pkg/vkapi/objects"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/transport"
 	"io"
 	"mime"
@@ -55,26 +56,9 @@ func (m *RawMessage) UnmarshalJSON(data []byte) error {
 }
 
 type Response struct {
-	Response      RawMessage     `json:"response"`
-	Error         Error          `json:"error"`
-	ExecuteErrors []ExecuteError `json:"execute_errors"`
-}
-
-type Error struct {
-	Code    int    `json:"error_code"` // TODO: To const
-	Message string `json:"error_msg"`
-	Text    string `json:"error_text"`
-	// TODO: complete errors
-}
-
-func (e Error) Error() string {
-	return "api: " + e.Message
-}
-
-type ExecuteError struct {
-	Method string `json:"method"`
-	Code   int    `json:"error_code"`
-	Msg    string `json:"error_msg"`
+	Response      RawMessage             `json:"response"`
+	Error         objects.Error          `json:"error"`
+	ExecuteErrors []objects.ExecuteError `json:"execute_errors"`
 }
 
 func (vkapi *VKAPI) getToken() string {
@@ -162,7 +146,12 @@ func (vkapi *VKAPI) DefaultHandler(method string, params ...Params) (Response, e
 
 	_ = resp.Body.Close()
 
-	// TODO: handle error
+	switch response.Error.Code {
+	case objects.ErrorNoType:
+		return response, nil
+	case objects.ErrorTooManyRequests:
+		// TODO: handle
+	}
 
 	return response, &response.Error
 }

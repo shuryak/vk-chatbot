@@ -2,6 +2,7 @@ package objects
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 type ClientInfo struct {
@@ -71,6 +72,10 @@ type Photo struct {
 
 	Width  int `json:"width"`
 	Height int `json:"height"`
+}
+
+func (photo Photo) ToAttachment() string {
+	return fmt.Sprintf("photo%d_%d", photo.OwnerID, photo.ID)
 }
 
 type Sticker struct {
