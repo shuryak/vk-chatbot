@@ -3,6 +3,7 @@ package events
 import (
 	"context"
 	"encoding/json"
+	"github.com/shuryak/vk-chatbot/pkg/vkapi/objects"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/transport"
 )
 
@@ -30,7 +31,7 @@ func NewFuncList() *FuncList {
 }
 
 type FuncList struct {
-	messageNew []func(context.Context, MessageNewObject)
+	messageNew []func(context.Context, objects.MessageNewObject)
 	eventsList []EventType
 
 	goroutine bool
@@ -42,7 +43,7 @@ func (fl *FuncList) Handler(ctx context.Context, e GroupEvent) error {
 	ctx = context.WithValue(ctx, transport.EventVersionKey, e.V)
 	switch e.Type {
 	case EventMessageNew:
-		var obj MessageNewObject
+		var obj objects.MessageNewObject
 		if err := json.Unmarshal(e.Object, &obj); err != nil {
 			return err
 		}
@@ -61,7 +62,7 @@ func (fl *FuncList) Handler(ctx context.Context, e GroupEvent) error {
 	return nil
 }
 
-func (fl *FuncList) MessageNew(f func(ctx context.Context, object MessageNewObject)) {
+func (fl *FuncList) MessageNew(f func(ctx context.Context, object objects.MessageNewObject)) {
 	fl.messageNew = append(fl.messageNew, f)
 	fl.eventsList = append(fl.eventsList, EventMessageNew)
 }
