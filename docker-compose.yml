@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: ./Dockerfile
     image: vk-chatbot
+    env_file:
+      - .env
     restart: always
     container_name: vk-chatbot
     ports:

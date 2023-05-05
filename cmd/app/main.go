@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"flag"
+	"fmt"
+	"github.com/shuryak/vk-chatbot/internal/config"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/callback"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/objects"
@@ -11,10 +14,29 @@ import (
 )
 
 func main() {
-	cb := callback.NewCallback()
-	vk := vkapi.NewVKAPI("vk1.a.GK7hvGI58YFlR45psBWriGWNKULnmRZQJTew8ViIUecJe4F8lUHr7PxRZhPMpHDBn1uMyDz5wbtfzt-gdTFZhZMTECI2TyzupZVtBMEfu3-hyeLBvJY-h0xoVJopwK3gThA7X1lPilxNurjhUTqjWMaMrMvLx28VOkspHHGNYrGQak7IFI0RJNk4kbEzl202Vb_lbcD09uG1A_lg3IlF0Q")
+	var cfg *config.Config
+	var err error
 
-	cb.ConfirmationKeys[220319689] = "8f504305"
+	configFilePath := flag.String("config", "", "Path to the config file")
+	flag.Parse()
+	if *configFilePath == "" {
+		cfg, err = config.ParseEnv()
+		if err != nil {
+			log.Fatalf("config err: %v", err)
+		}
+		fmt.Println("Config file not provided. Only environment variables are used.")
+	} else {
+		cfg, err = config.ParseFileAndEnv(*configFilePath)
+		if err != nil {
+			log.Fatalf("config err: %v", err)
+		}
+		fmt.Printf("Using config file at: %s\n.", *configFilePath)
+	}
+
+	cb := callback.NewCallback()
+	vk := vkapi.NewVKAPI(cfg.VK.Token)
+
+	cb.ConfirmationKeys[cfg.VK.GroupID] = cfg.VK.ConfirmationKey
 
 	cb.MessageNew(func(ctx context.Context, obj objects.MessageNewObject) {
 		log.Println(obj.Message.Text)
@@ -48,7 +70,8 @@ func main() {
 
 	http.HandleFunc("/callback", cb.HandleFunc)
 
-	err := http.ListenAndServe(":8080", nil)
+	fmt.Printf("Server running on %s.\n", cfg.Server.Port)
+	err = http.ListenAndServe(cfg.Server.Port, nil)
 	if err != nil {
 		panic(err)
 	}

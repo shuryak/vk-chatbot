@@ -21,6 +21,7 @@ ENV SERVICE=vk-chatbot
 
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
 COPY --from=builder /go/src/$SERVICE/$SERVICE /$SERVICE
+COPY --from=builder /go/src/$SERVICE/internal/config/config.yml /internal/config/config.yml
 EXPOSE 8080
 ENTRYPOINT ["/vk-chatbot"]
 CMD []
