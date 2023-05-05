@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  vk-chatbot:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: vk-chatbot
+    restart: always
+    container_name: vk-chatbot
+    ports:
+      - "8080:8080"
