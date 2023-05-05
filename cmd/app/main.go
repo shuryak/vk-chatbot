@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/shuryak/vk-chatbot/internal/config"
+	"github.com/shuryak/vk-chatbot/pkg/logger"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/callback"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/objects"
@@ -33,8 +34,10 @@ func main() {
 		fmt.Printf("Using config file at: %s\n.", *configFilePath)
 	}
 
-	cb := callback.NewCallback()
-	vk := vkapi.NewVKAPI(cfg.VK.Token)
+	l := logger.New(cfg.Logger.Level)
+
+	cb := callback.NewCallback(l)
+	vk := vkapi.NewVKAPI(l, cfg.VK.Token)
 
 	cb.ConfirmationKeys[cfg.VK.GroupID] = cfg.VK.ConfirmationKey
 

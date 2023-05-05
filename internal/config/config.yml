@@ -5,3 +5,6 @@ vk:
   group_id: 220319689
   vk_token: vk1.a.GK7hvGI58YFlR45psBWriGWNKULnmRZQJTew8ViIUecJe4F8lUHr7PxRZhPMpHDBn1uMyDz5wbtfzt-gdTFZhZMTECI2TyzupZVtBMEfu3-hyeLBvJY-h0xoVJopwK3gThA7X1lPilxNurjhUTqjWMaMrMvLx28VOkspHHGNYrGQak7IFI0RJNk4kbEzl202Vb_lbcD09uG1A_lg3IlF0Q
   confirm_key: 8f504305
+
+logger:
+  level: debug

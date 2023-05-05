@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"github.com/shuryak/vk-chatbot/pkg/logger"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/doc"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/objects"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/transport"
@@ -26,16 +27,19 @@ type VKAPI struct {
 	Handler      func(method string, params ...Params) (Response, error)
 	// TODO: limits
 
+	l logger.Interface
+
 	mux sync.Mutex
 }
 
-func NewVKAPI(tokens ...string) *VKAPI {
+func NewVKAPI(l logger.Interface, tokens ...string) *VKAPI {
 	vk := VKAPI{
 		accessTokens: tokens,
 		Version:      doc.Version,
 		MethodURL:    doc.MethodURL,
 		Client:       http.DefaultClient,
 		UserAgent:    transport.UserAgent,
+		l:            l,
 	}
 	vk.Handler = vk.DefaultHandler
 	return &vk
@@ -102,10 +106,11 @@ func (vkapi *VKAPI) DefaultHandler(method string, params ...Params) (Response, e
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, rawBody)
 	if err != nil {
+		vkapi.l.Error("VKAPI - DefaultHandler - http.NewRequestWithContext: %v", err)
 		return response, err
 	}
 
-	acceptEncdoing := "gzip"
+	acceptEncoding := "gzip"
 
 	token := params[len(params)-1]["access_token"].(string)
 	req.Header.Set("Authorization", "Bearer "+token)
@@ -113,30 +118,37 @@ func (vkapi *VKAPI) DefaultHandler(method string, params ...Params) (Response, e
 	req.Header.Set("User-Agent", vkapi.UserAgent)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	req.Header.Set("Accept-Encoding", acceptEncdoing)
+	req.Header.Set("Accept-Encoding", acceptEncoding)
 
 	var reader io.Reader
 
 	resp, err := vkapi.Client.Do(req)
 	if err != nil {
+		vkapi.l.Error("VKAPI - DefaultHandler - vkapi.Client.Do: %v", err)
 		return response, err
 	}
 
 	switch resp.Header.Get("Content-Encoding") {
 	case "gzip":
 		gzipReader, _ := gzip.NewReader(resp.Body)
-		defer gzipReader.Close()
+		defer func(gzipReader *gzip.Reader) {
+			err := gzipReader.Close()
+			if err != nil {
+				vkapi.l.Error("VKAPI - DefaultHandler - gzipReader.Close: %v", err)
+			}
+		}(gzipReader)
 
 		reader = gzipReader
 	default:
 		reader = resp.Body
 	}
 
-	mediatype, _, _ := mime.ParseMediaType(resp.Header.Get("Content-Type"))
-	switch mediatype {
+	mediaType, _, _ := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+	switch mediaType {
 	case "application/json":
 		err = json.NewDecoder(reader).Decode(&response)
 		if err != nil {
+			vkapi.l.Error("VKAPI - DefaultHandler - json.NewDecoder.Decode: %v", err)
 			_ = resp.Body.Close()
 			return response, err
 		}
@@ -167,6 +179,9 @@ func (vkapi *VKAPI) Request(method string, params ...Params) ([]byte, error) {
 	params = append(params, reqParams)
 
 	resp, err := vkapi.Handler(method, params...)
+	if err != nil {
+		vkapi.l.Error("VKAPI - Request - vkapi.Handler: %v", err)
+	}
 
 	return resp.Response, err
 }
@@ -174,10 +189,14 @@ func (vkapi *VKAPI) Request(method string, params ...Params) ([]byte, error) {
 func (vkapi *VKAPI) RequestUnmarshal(method string, obj interface{}, params ...Params) error {
 	rawResponse, err := vkapi.Request(method, params...)
 	if err != nil {
+		vkapi.l.Error("VKAPI - RequestUnmarshal - vkapi.Request: %v", err)
 		return err
 	}
 
 	err = json.Unmarshal(rawResponse, &obj)
+	if err != nil {
+		vkapi.l.Error("VKAPI - RequestUnmarshal - json.Unmarshal: %v", err)
+	}
 
 	return err
 }

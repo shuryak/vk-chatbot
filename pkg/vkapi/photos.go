@@ -26,11 +26,13 @@ func (vkapi *VKAPI) UploadFile(url string, file io.Reader, fieldname, filename s
 
 	part, err := writer.CreateFormFile(fieldname, filename)
 	if err != nil {
+		vkapi.l.Error("VKAPI - UploadFile - writer.CreateFormFile: %v", err)
 		return
 	}
 
 	_, err = io.Copy(part, file)
 	if err != nil {
+		vkapi.l.Error("VKAPI - UploadFile - io.Copy: %v", err)
 		return
 	}
 
@@ -39,9 +41,15 @@ func (vkapi *VKAPI) UploadFile(url string, file io.Reader, fieldname, filename s
 
 	resp, err := vkapi.Client.Post(url, contentType, body)
 	if err != nil {
+		vkapi.l.Error("VKAPI - UploadFile - vkapi.Client.Post: %v", err)
 		return
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			vkapi.l.Error("VKAPI - UploadFile - Body.Close: %v", err)
+		}
+	}(resp.Body)
 
 	bodyContent, err = io.ReadAll(resp.Body)
 
@@ -61,11 +69,13 @@ func (vkapi *VKAPI) UploadMessagesPhoto(peerID int, file io.Reader) (response Ph
 		"peer_id": peerID,
 	})
 	if err != nil {
+		vkapi.l.Error("VKAPI - UploadMessagesPhoto - vkapi.PhotosGetMessagesUploadServer: %v", err)
 		return
 	}
 
 	bodyContent, err := vkapi.UploadFile(uploadServer.UploadURL, file, "photo", "photo.jpeg")
 	if err != nil {
+		vkapi.l.Error("VKAPI - UploadMessagesPhoto - vkapi.UploadFile: %v", err)
 		return
 	}
 
@@ -73,6 +83,7 @@ func (vkapi *VKAPI) UploadMessagesPhoto(peerID int, file io.Reader) (response Ph
 
 	err = json.Unmarshal(bodyContent, &handler)
 	if err != nil {
+		vkapi.l.Error("VKAPI - UploadMessagesPhoto - json.Unmarshal: %v", err)
 		return
 	}
 

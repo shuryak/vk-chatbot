@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/shuryak/vk-chatbot/pkg/logger"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/events"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/transport"
 	"net/http"
@@ -14,15 +15,17 @@ import (
 type Callback struct {
 	ConfirmationKeys map[int]string // GroupID: ConfirmationKey
 	SecretKeys       map[int]string // GroupID: SecretKey
-
 	events.FuncList
+
+	l logger.Interface
 }
 
-func NewCallback() *Callback {
+func NewCallback(l logger.Interface) *Callback {
 	return &Callback{
 		ConfirmationKeys: make(map[int]string),
 		SecretKeys:       make(map[int]string),
-		FuncList:         *events.NewFuncList(),
+		l:                l,
+		FuncList:         *events.NewFuncList(l),
 	}
 }
 
@@ -31,7 +34,7 @@ func (cb *Callback) HandleFunc(w http.ResponseWriter, r *http.Request) {
 
 	var e events.GroupEvent
 	if err := decoder.Decode(&e); err != nil {
-		// TODO: log
+		cb.l.Error("Callback - HandleFunc - decoder.Decode: %v", err)
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
@@ -39,7 +42,7 @@ func (cb *Callback) HandleFunc(w http.ResponseWriter, r *http.Request) {
 	secretKey, ok := cb.SecretKeys[e.GroupID]
 
 	if ok && e.Secret != secretKey {
-		// TODO: log
+		cb.l.Error("Callback - HandleFunc - secret key check")
 		http.Error(w, "Bad Secret", http.StatusForbidden)
 	}
 
@@ -47,6 +50,7 @@ func (cb *Callback) HandleFunc(w http.ResponseWriter, r *http.Request) {
 		if _, ok := cb.ConfirmationKeys[e.GroupID]; ok {
 			_, err := fmt.Fprintf(w, cb.ConfirmationKeys[e.GroupID])
 			if err != nil {
+				cb.l.Error("Callback - HandleFunc - confirmation key print: %v", err)
 				http.Error(w, "Internal server error", http.StatusInternalServerError)
 			}
 		}
@@ -78,7 +82,7 @@ func (cb *Callback) HandleFunc(w http.ResponseWriter, r *http.Request) {
 	ctx = context.WithValue(ctx, transport.CallbackRemove, removeFunc)
 
 	if err := cb.Handler(ctx, e); err != nil {
-		// TODO: log
+		cb.l.Error("Callback - HandleFunc - cb.Handler: %v", err)
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}

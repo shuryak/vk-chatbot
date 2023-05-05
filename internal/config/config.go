@@ -9,6 +9,7 @@ type (
 	Config struct {
 		Server `yaml:"server"`
 		VK     `yaml:"vk"`
+		Logger `yaml:"logger"`
 	}
 
 	Server struct {
@@ -19,6 +20,10 @@ type (
 		GroupID         int    `yaml:"group_id" env:"VK_GROUP_ID"`
 		Token           string `yaml:"token" env:"VK_TOKEN"`
 		ConfirmationKey string `yaml:"confirm_key" env:"VK_CONFIRM_KEY"`
+	}
+
+	Logger struct {
+		Level string `yaml:"level" env:"LOG_LEVEL" env-default:"debug"`
 	}
 )
 

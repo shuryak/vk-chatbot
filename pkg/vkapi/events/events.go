@@ -3,6 +3,7 @@ package events
 import (
 	"context"
 	"encoding/json"
+	"github.com/shuryak/vk-chatbot/pkg/logger"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/objects"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/transport"
 )
@@ -26,13 +27,15 @@ type GroupEvent struct {
 	Secret  string          `json:"secret"`
 }
 
-func NewFuncList() *FuncList {
-	return &FuncList{}
+func NewFuncList(l logger.Interface) *FuncList {
+	return &FuncList{l: l}
 }
 
 type FuncList struct {
 	messageNew []func(context.Context, objects.MessageNewObject)
 	eventsList []EventType
+
+	l logger.Interface
 
 	goroutine bool
 }
@@ -45,6 +48,7 @@ func (fl *FuncList) Handler(ctx context.Context, e GroupEvent) error {
 	case EventMessageNew:
 		var obj objects.MessageNewObject
 		if err := json.Unmarshal(e.Object, &obj); err != nil {
+			fl.l.Error("FuncList - EventMessageNew - json.Unmarshal: %v", err)
 			return err
 		}
 
