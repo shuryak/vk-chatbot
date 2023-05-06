@@ -2,12 +2,17 @@ package app
 
 import (
 	"fmt"
+	"github.com/redis/go-redis/v9"
 	"github.com/shuryak/vk-chatbot/internal/config"
 	"github.com/shuryak/vk-chatbot/internal/handlers"
+	"github.com/shuryak/vk-chatbot/internal/usecase"
+	"github.com/shuryak/vk-chatbot/internal/usecase/repo"
 	"github.com/shuryak/vk-chatbot/pkg/logger"
+	"github.com/shuryak/vk-chatbot/pkg/postgres"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi"
 	"github.com/shuryak/vk-chatbot/pkg/vkapi/callback"
 	"net/http"
+	"time"
 )
 
 func Run(cfg *config.Config) {
@@ -17,14 +22,30 @@ func Run(cfg *config.Config) {
 	cb.ConfirmationKeys[cfg.VK.GroupID] = cfg.VK.ConfirmationKey
 	vk := vkapi.NewVKAPI(l, cfg.VK.Token)
 
-	h := handlers.NewHandlers(vk, l)
+	pg, err := postgres.New(cfg.PG.URL, l, postgres.MaxPoolSize(cfg.PG.PoolMax))
+	if err != nil {
+		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
+	}
+	defer pg.Close()
+
+	uuc := usecase.NewUsersUseCase(repo.NewUsersRepo(pg))
+
+	r := redis.NewClient(&redis.Options{
+		Addr:       cfg.Redis.Host + cfg.Redis.Port,
+		ClientName: cfg.Redis.Name,
+		Password:   cfg.Redis.Password,
+		DB:         0, // use default DB
+	})
+	qr := repo.NewQuestionsRepo(r, 20*time.Minute)
+
+	h := handlers.NewHandlers(vk, *uuc, qr, l)
 
 	cb.MessageNew(h.NewMessage)
 
 	http.HandleFunc("/callback", cb.HandleFunc)
 
 	fmt.Printf("Server running on %s.\n", cfg.Server.Port)
-	err := http.ListenAndServe(cfg.Server.Port, nil)
+	err = http.ListenAndServe(cfg.Server.Port, nil)
 	if err != nil {
 		panic(err)
 	}

@@ -14,6 +14,19 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    image: redis:7.0-alpine
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - redis-network
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass $REDIS_PASSWORD
+
   vk-chatbot:
     build:
       context: .
@@ -21,8 +34,12 @@ services:
     image: vk-chatbot
     depends_on:
       - db
+      - redis
     restart: always
     container_name: vk-chatbot
+    networks:
+      - db-network
+      - redis-network
     env_file:
       - .env
     environment:
@@ -52,5 +69,7 @@ services:
 
 volumes:
   db-data:
+  redis-data:
 networks:
   db-network:
+  redis-network:

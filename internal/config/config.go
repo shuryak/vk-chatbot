@@ -8,8 +8,22 @@ import (
 type (
 	Config struct {
 		Server `yaml:"server"`
+		PG     `yaml:"postgres"`
+		Redis  `yaml:"redis"`
 		VK     `yaml:"vk"`
 		Logger `yaml:"logger"`
+	}
+
+	PG struct {
+		PoolMax int    `yaml:"pool_max" env:"PG_POOL_MAX"`
+		URL     string `env:"PG_URL"`
+	}
+
+	Redis struct {
+		Host     string `yaml:"host" env:"REDIS_HOST"`
+		Port     string `yaml:"port" env:"REDIS_PORT"`
+		Name     string `yaml:"name" env:"REDIS_NAME"`
+		Password string `yaml:"password" env:"REDIS_PASSWORD"`
 	}
 
 	Server struct {

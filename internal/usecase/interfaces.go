@@ -22,4 +22,9 @@ type (
 		UpdateReciprocity(ctx context.Context, id int, reciprocity bool) (*entities.Sympathy, error)
 		// TODO: Full CRUD
 	}
+
+	QuestionsRepo interface {
+		Set(ctx context.Context, VKID int, q entities.QuestionType) error
+		Get(ctx context.Context, VKID int) (entities.QuestionType, error)
+	}
 )

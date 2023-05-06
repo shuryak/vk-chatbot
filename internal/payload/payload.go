@@ -2,19 +2,34 @@ package payload
 
 import "encoding/json"
 
-type ButtonPayload string
+type ButtonCommand string
 
 const (
-	Start  ButtonPayload = "start"
-	Create ButtonPayload = "create"
+	StartCommand ButtonCommand = "start"
+	SexCommand   ButtonCommand = "sex"
+	AboutCommand ButtonCommand = "about"
+	CityCommand  ButtonCommand = "city"
+	AgeCommand   ButtonCommand = "age"
+	SaveCommand  ButtonCommand = "save"
 )
 
 type Payload struct {
-	Command ButtonPayload `json:"command"`
+	Command ButtonCommand `json:"command"`
+	Options Options       `json:"options,omitempty"`
 }
 
-func New(command ButtonPayload) *Payload {
-	return &Payload{command}
+type Options struct {
+	InterestedIn string `json:"interested_in,omitempty"`
+	PhotoURL     string `json:"photo_url,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Age          int    `json:"age,omitempty"`
+	City         string `json:"city,omitempty"`
+}
+
+func New(command ButtonCommand) *Payload {
+	return &Payload{
+		Command: command,
+	}
 }
 
 func Unmarshal(rawPayload string) (payload Payload, err error) {
