@@ -23,9 +23,9 @@ var _ usecase.SympathyRepo = (*SympathyRepo)(nil)
 func (sr SympathyRepo) Create(ctx context.Context, s entities.Sympathy) (*entities.Sympathy, error) {
 	sql, args, err := sr.Builder.
 		Insert("sympathy").
-		Columns("first_user_id", "second_user_id", "reciprocity").
-		Values(s.FirstUserID, s.SecondUserID, s.Reciprocity).
-		Suffix("RETURNING \"id\", \"first_user_id\", \"second_user_id\", \"reciprocity\"").
+		Columns("first_user_vk_id", "second_user_vk_id", "reciprocity").
+		Values(s.FirstUserVKID, s.SecondUserVKID, s.Reciprocity).
+		Suffix("RETURNING \"id\", \"first_user_vk_id\", \"second_user_vk_id\", \"reciprocity\"").
 		ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("SympathyPostgres - Create - sr.Builder: %v", err)
@@ -33,7 +33,7 @@ func (sr SympathyRepo) Create(ctx context.Context, s entities.Sympathy) (*entiti
 
 	row := sr.Pool.QueryRow(ctx, sql, args...)
 	dbSympathy := entities.Sympathy{}
-	if err = row.Scan(&dbSympathy.ID, &dbSympathy.FirstUserID, &dbSympathy.SecondUserID, &dbSympathy.Reciprocity); err != nil {
+	if err = row.Scan(&dbSympathy.ID, &dbSympathy.FirstUserVKID, &dbSympathy.SecondUserVKID, &dbSympathy.Reciprocity); err != nil {
 		return nil, fmt.Errorf("SympathyPostgres - Create - row.Scan: %v", err)
 	}
 
@@ -42,16 +42,16 @@ func (sr SympathyRepo) Create(ctx context.Context, s entities.Sympathy) (*entiti
 
 func (sr SympathyRepo) GetByUserIDs(ctx context.Context, firstUserID, secondUserID int) (*entities.Sympathy, error) {
 	sql, args, err := sr.Builder.
-		Select("id", "first_user_id", "second_user_id", "reciprocity").
+		Select("id", "first_user_vk_id", "second_user_vk_id", "reciprocity").
 		From("sympathy").
 		Where(squirrel.Or{
 			squirrel.And{
-				squirrel.Eq{"first_user_id": firstUserID},
-				squirrel.Eq{"second_user_id": secondUserID},
+				squirrel.Eq{"first_user_vk_id": firstUserID},
+				squirrel.Eq{"second_user_vk_id": secondUserID},
 			},
 			squirrel.And{
-				squirrel.Eq{"first_user_id": secondUserID},
-				squirrel.Eq{"second_user_id": firstUserID},
+				squirrel.Eq{"first_user_vk_id": secondUserID},
+				squirrel.Eq{"second_user_vk_id": firstUserID},
 			},
 		}).
 		ToSql()
@@ -61,7 +61,7 @@ func (sr SympathyRepo) GetByUserIDs(ctx context.Context, firstUserID, secondUser
 
 	row := sr.Pool.QueryRow(ctx, sql, args...)
 	dbSympathy := entities.Sympathy{}
-	err = row.Scan(&dbSympathy.ID, &dbSympathy.FirstUserID, &dbSympathy.SecondUserID, &dbSympathy.Reciprocity)
+	err = row.Scan(&dbSympathy.ID, &dbSympathy.FirstUserVKID, &dbSympathy.SecondUserVKID, &dbSympathy.Reciprocity)
 	if err != nil {
 		return nil, fmt.Errorf("SympathyPostgres - GetByUserIDs - row.Scan: %v", err)
 	}
@@ -76,7 +76,7 @@ func (sr SympathyRepo) UpdateReciprocity(ctx context.Context, id int, reciprocit
 			"reciprocity": reciprocity,
 		}).
 		Where(squirrel.Eq{"id": id}).
-		Suffix("RETURNING \"id\", \"first_user_id\", \"second_user_id\", \"reciprocity\"").
+		Suffix("RETURNING \"id\", \"first_user_vk_id\", \"second_user_vk_id\", \"reciprocity\"").
 		ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("SympathyPostgres - UpdateReciprocity - sr.Builder: %v", err)
@@ -84,7 +84,7 @@ func (sr SympathyRepo) UpdateReciprocity(ctx context.Context, id int, reciprocit
 
 	row := sr.Pool.QueryRow(ctx, sql, args...)
 	dbSympathy := entities.Sympathy{}
-	if err = row.Scan(&dbSympathy.ID, &dbSympathy.FirstUserID, &dbSympathy.SecondUserID, &dbSympathy.Reciprocity); err != nil {
+	if err = row.Scan(&dbSympathy.ID, &dbSympathy.FirstUserVKID, &dbSympathy.SecondUserVKID, &dbSympathy.Reciprocity); err != nil {
 		return nil, fmt.Errorf("SympathyPostgres - UpdateReciprocity - row.Scan: %v", err)
 	}
 
