@@ -1,14 +1,36 @@
 version: "3.9"
 
 services:
+  db:
+    image: postgres:15.2-alpine3.17
+    restart: always
+    container_name: db
+    env_file:
+      - .env
+    networks:
+      - db-network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
   vk-chatbot:
     build:
       context: .
       dockerfile: ./Dockerfile
     image: vk-chatbot
-    env_file:
-      - .env
     restart: always
     container_name: vk-chatbot
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB: ${DB}
+      PG_URL: postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@user-postgres:5432/$DB?sslmode=disable
     ports:
       - "8080:8080"
+
+volumes:
+  db-data:
+networks:
+  db-network:
