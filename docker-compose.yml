@@ -13,11 +13,14 @@ services:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
   vk-chatbot:
     build:
       context: .
       dockerfile: ./Dockerfile
     image: vk-chatbot
+    depends_on:
+      - db
     restart: always
     container_name: vk-chatbot
     env_file:
@@ -26,9 +29,26 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       DB: ${DB}
-      PG_URL: postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@user-postgres:5432/$DB?sslmode=disable
+      PG_URL: postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$DB?sslmode=disable
     ports:
       - "8080:8080"
+
+  db-migrations:
+    image: migrate/migrate
+    depends_on:
+      - db
+    container_name: db-migrations
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB: ${DB}
+    networks:
+      - db-network
+    volumes:
+      - ./internal/migrations:/migrations
+    command: -path=/migrations -database postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$DB?sslmode=disable up
 
 volumes:
   db-data:
