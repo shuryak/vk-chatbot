@@ -6,6 +6,10 @@ import (
 )
 
 type (
+	Users interface {
+		Create(ctx context.Context, u entities.User) (*entities.User, error)
+	}
+
 	UsersRepo interface {
 		Create(ctx context.Context, u entities.User) (*entities.User, error)
 		GetByVKID(ctx context.Context, VKID int) (*entities.User, error)
