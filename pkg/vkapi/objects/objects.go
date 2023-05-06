@@ -166,19 +166,25 @@ type MessageNewObject struct {
 
 // https://dev.vk.com/reference/objects/user
 type User struct {
-	ID              int    `json:"id"`
-	FirstName       string `json:"first_name"`
-	LastName        string `json:"last_name"`
-	Deactivated     string `json:"deactivated"`
-	IsClosed        string `json:"is_closed"`
-	CanAccessClosed bool   `json:"can_access_closed"`
-	About           string `json:"about"`
-	Activities      string `json:"activities"`
-	Bdate           string `json:"bdate"`
-	Blacklisted     int    `json:"blacklisted"`
-	BlacklistedByMe int    `json:"blacklisted_by_me"`
-	Books           string `json:"books"`
-	PhotoId         string `json:"photo_id"`
+	ID              int      `json:"id"`
+	FirstName       string   `json:"first_name"`
+	LastName        string   `json:"last_name"`
+	Deactivated     string   `json:"deactivated"`
+	IsClosed        string   `json:"is_closed"`
+	CanAccessClosed bool     `json:"can_access_closed"`
+	About           string   `json:"about"`
+	Activities      string   `json:"activities"`
+	Bdate           string   `json:"bdate"`
+	Blacklisted     int      `json:"blacklisted"`
+	BlacklistedByMe int      `json:"blacklisted_by_me"`
+	Books           string   `json:"books"`
+	PhotoId         string   `json:"photo_id"`
+	City            UserCity `json:"city"`
 	//Relation        int    `json:"relation"`
 	// TODO: ...
+}
+
+type UserCity struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
 }
