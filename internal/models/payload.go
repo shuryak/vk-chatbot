@@ -1,4 +1,4 @@
-package payload
+package models
 
 import "encoding/json"
 
@@ -8,17 +8,18 @@ const (
 	StartCommand ButtonCommand = "start"
 	SexCommand   ButtonCommand = "sex"
 	AboutCommand ButtonCommand = "about"
+	NameCommand  ButtonCommand = "name"
 	CityCommand  ButtonCommand = "city"
 	AgeCommand   ButtonCommand = "age"
 	SaveCommand  ButtonCommand = "save"
 )
 
 type Payload struct {
-	Command ButtonCommand `json:"command"`
-	Options Options       `json:"options,omitempty"`
+	Command ButtonCommand  `json:"command"`
+	Options PayloadOptions `json:"options,omitempty"`
 }
 
-type Options struct {
+type PayloadOptions struct {
 	InterestedIn string `json:"interested_in,omitempty"`
 	PhotoURL     string `json:"photo_url,omitempty"`
 	Name         string `json:"name,omitempty"`
@@ -26,13 +27,13 @@ type Options struct {
 	City         string `json:"city,omitempty"`
 }
 
-func New(command ButtonCommand) *Payload {
+func NewPayload(command ButtonCommand) *Payload {
 	return &Payload{
 		Command: command,
 	}
 }
 
-func Unmarshal(rawPayload string) (payload Payload, err error) {
+func UnmarshalPayload(rawPayload string) (payload Payload, err error) {
 	err = json.Unmarshal([]byte(rawPayload), &payload)
 	return
 }

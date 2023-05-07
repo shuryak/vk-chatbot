@@ -5,6 +5,8 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/shuryak/vk-chatbot/internal/config"
 	"github.com/shuryak/vk-chatbot/internal/handlers"
+	"github.com/shuryak/vk-chatbot/internal/handlers/payload"
+	"github.com/shuryak/vk-chatbot/internal/models"
 	"github.com/shuryak/vk-chatbot/internal/usecase"
 	"github.com/shuryak/vk-chatbot/internal/usecase/repo"
 	"github.com/shuryak/vk-chatbot/pkg/logger"
@@ -38,9 +40,13 @@ func Run(cfg *config.Config) {
 	})
 	qr := repo.NewQuestionsRepo(r, 20*time.Minute)
 
-	h := handlers.NewHandlers(vk, *uuc, qr, l)
+	//h := handlers.NewHandlers(vk, *uuc, qr, l)
 
-	cb.MessageNew(h.NewMessage)
+	h := handlers.NewHandlers(l)
+	ph := payload.NewHandlers(usecase.NewVKMessenger(vk), *uuc, qr, l)
+	_ = h.RegisterHandler(models.StartCommand, ph.Start)
+
+	cb.MessageNew(h.Handle)
 
 	http.HandleFunc("/callback", cb.HandleFunc)
 
