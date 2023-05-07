@@ -11,11 +11,11 @@ func (h *Handlers) Sex(ctx context.Context, p models.Payload) error {
 	msg := models.NewTextMessage(reqMsg.PeerID, "Кого будем искать?")
 	msg.Keyboard = models.NewKeyboard(true).
 		AddRow().
-		AddButton("👩 Девушки", models.NegativeColor, *models.NewPayload(models.AboutCommand, models.PayloadOptions{
+		AddButton("👩 Девушки", models.NegativeColor, *models.NewPayload(models.CreateCommand, models.PayloadOptions{
 			InterestedIn: "girls",
 		})).
 		AddRow().
-		AddButton("👨 Парни", models.PrimaryColor, *models.NewPayload(models.AboutCommand, models.PayloadOptions{
+		AddButton("👨 Парни", models.PrimaryColor, *models.NewPayload(models.CreateCommand, models.PayloadOptions{
 			InterestedIn: "boys",
 		}))
 

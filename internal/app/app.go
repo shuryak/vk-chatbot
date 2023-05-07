@@ -46,10 +46,11 @@ func Run(cfg *config.Config) {
 
 	h := handlers.NewPayloadHandlers(quc, l)
 	ph := payload.NewHandlers(messenger, quc, usecase.NewVKUserManager(vk), *uuc, l)
-	qh := questions2.NewHandler(quc, messenger)
+	qh := questions2.NewHandler(quc, *uuc, messenger)
 	_ = h.RegisterPayloadHandler(models.StartCommand, ph.Start)
 	_ = h.RegisterPayloadHandler(models.SexCommand, ph.Sex)
-	_ = h.RegisterPayloadHandler(models.AboutCommand, ph.About)
+	_ = h.RegisterPayloadHandler(models.CreateCommand, ph.Create)
+	_ = h.RegisterPayloadHandler(models.ShowCommand, ph.Show)
 	_ = h.RegisterPayloadHandlerForMany(ph.Change, models.CityCommand, models.NameCommand, models.AgeCommand)
 	_ = h.RegisterQuestionHandlerForMany(qh.Edit, questions.CityQuestion, questions.NameQuestion, questions.AgeQuestion)
 

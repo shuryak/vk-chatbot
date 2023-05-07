@@ -5,13 +5,14 @@ import "encoding/json"
 type ButtonCommand string
 
 const (
-	StartCommand ButtonCommand = "start"
-	SexCommand   ButtonCommand = "sex"
-	AboutCommand ButtonCommand = "about"
-	NameCommand  ButtonCommand = "name"
-	CityCommand  ButtonCommand = "city"
-	AgeCommand   ButtonCommand = "age"
-	SaveCommand  ButtonCommand = "save"
+	StartCommand  ButtonCommand = "start"
+	SexCommand    ButtonCommand = "sex"
+	CreateCommand ButtonCommand = "create"
+	ShowCommand   ButtonCommand = "show"
+	NameCommand   ButtonCommand = "name"
+	CityCommand   ButtonCommand = "city"
+	AgeCommand    ButtonCommand = "age"
+	SaveCommand   ButtonCommand = "save"
 )
 
 type Payload struct {
@@ -25,6 +26,7 @@ type PayloadOptions struct {
 	Name         string `json:"name,omitempty"`
 	Age          int    `json:"age,omitempty"`
 	City         string `json:"city,omitempty"`
+	NoSave       *bool  `json:"no_save,omitempty"`
 }
 
 func NewPayload(cmd ButtonCommand, opts PayloadOptions) *Payload {

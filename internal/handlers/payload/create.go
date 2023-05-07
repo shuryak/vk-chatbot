@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (h *Handlers) About(ctx context.Context, p models.Payload) error {
+func (h *Handlers) Create(ctx context.Context, p models.Payload) error {
 	reqMsg := MessageFromContext(ctx)
 
 	reqUser, err := h.um.GetByID(reqMsg.PeerID)
@@ -35,9 +35,16 @@ func (h *Handlers) About(ctx context.Context, p models.Payload) error {
 		Activated:    &f,
 	})
 
+	var interestedIn string
+	if user.InterestedIn == "girls" {
+		interestedIn = "девушки"
+	} else {
+		interestedIn = "парни"
+	}
+
 	msg := models.NewTextMessage(
 		reqMsg.PeerID,
-		fmt.Sprintf("Имя: %s. Город: %s. Возраст: %d. Интересуют: %s", user.Name, user.City, user.Age, user.InterestedIn),
+		fmt.Sprintf("Имя: %s. Город: %s. Возраст: %d. Интересуют: %s.\n\nПроверь правильность данных. Если всё 👌, нажми зелёную кнопку и переходи к просмотру анкет.", user.Name, user.City, user.Age, interestedIn),
 	)
 	msg.Keyboard = models.NewInlineKeyboard().
 		AddRow().
@@ -48,7 +55,7 @@ func (h *Handlers) About(ctx context.Context, p models.Payload) error {
 		AddButton("🏙️ Изменить город", models.SecondaryColor, *models.NewPayloadWithCommandOnly(models.CityCommand)).
 		AddRow().
 		AddButton("5️⃣ Изменить возраст", models.SecondaryColor, *models.NewPayloadWithCommandOnly(models.AgeCommand))
-	msg.Attachment = &models.Attachment{PhotoID: reqUser.PhotoID}
+	msg.Attachment = &models.Attachment{PhotoID: user.PhotoID}
 
 	err = h.messenger.Send(*msg)
 	return err

@@ -9,11 +9,12 @@ import (
 
 type Handler struct {
 	q         usecase.Questions
+	u         usecase.Users
 	messenger usecase.Messenger
 }
 
-func NewHandler(q usecase.Questions, messenger usecase.Messenger) *Handler {
-	return &Handler{q, messenger}
+func NewHandler(q usecase.Questions, u usecase.Users, messenger usecase.Messenger) *Handler {
+	return &Handler{q, u, messenger}
 }
 
 func QuestionFromContext(ctx context.Context) questions.QuestionType {
