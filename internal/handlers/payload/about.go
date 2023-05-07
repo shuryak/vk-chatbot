@@ -3,7 +3,6 @@ package payload
 import (
 	"context"
 	"fmt"
-	"github.com/shuryak/vk-chatbot/internal/entities"
 	"github.com/shuryak/vk-chatbot/internal/models"
 	"time"
 )
@@ -11,7 +10,7 @@ import (
 func (h *Handlers) About(ctx context.Context, p models.Payload) error {
 	reqMsg := MessageFromContext(ctx)
 
-	reqUser, err := h.um.GetUser(reqMsg.PeerID)
+	reqUser, err := h.um.GetByID(reqMsg.PeerID)
 	if err != nil {
 		return err
 	}
@@ -26,8 +25,8 @@ func (h *Handlers) About(ctx context.Context, p models.Payload) error {
 	}
 
 	f := false
-	user, err := h.u.Create(ctx, entities.User{
-		VKID:         reqUser.ID,
+	user, err := h.u.Create(ctx, models.User{
+		ID:           reqUser.ID,
 		PhotoID:      reqUser.PhotoID,
 		Name:         reqUser.Name,
 		Age:          age,

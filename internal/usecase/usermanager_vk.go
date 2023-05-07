@@ -18,9 +18,9 @@ func NewVKUserManager(vkapi *vkapi.VKAPI) *VKUserManager {
 }
 
 // Check for implementation
-var _ UserManager = (*VKUserManager)(nil)
+var _ ChatUsers = (*VKUserManager)(nil)
 
-func (vk *VKUserManager) GetUser(ID int) (*models.User, error) {
+func (vk *VKUserManager) GetByID(ID int) (*models.ChatUser, error) {
 	builder := params.NewUsersGetBuilder().
 		UserIDs([]string{strconv.Itoa(ID)}).
 		Fields([]string{"photo_id, city, bdate"})
@@ -33,7 +33,7 @@ func (vk *VKUserManager) GetUser(ID int) (*models.User, error) {
 		return nil, fmt.Errorf("user %d not recieved", ID)
 	}
 
-	user := models.User{
+	user := models.ChatUser{
 		ID:        users[0].ID,
 		PhotoID:   users[0].PhotoId,
 		Name:      users[0].FirstName,

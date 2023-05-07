@@ -10,12 +10,12 @@ import (
 type Handlers struct {
 	messenger usecase.Messenger
 	q         usecase.Questions
-	um        usecase.UserManager
+	um        usecase.ChatUsers
 	u         usecase.Users
 	l         logger.Interface
 }
 
-func NewHandlers(messenger usecase.Messenger, q usecase.Questions, um usecase.UserManager, u usecase.Users, l logger.Interface) *Handlers {
+func NewHandlers(messenger usecase.Messenger, q usecase.Questions, um usecase.ChatUsers, u usecase.Users, l logger.Interface) *Handlers {
 	return &Handlers{messenger, q, um, u, l}
 }
 

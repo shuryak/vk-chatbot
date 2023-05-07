@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/shuryak/vk-chatbot/internal/entities"
+	"github.com/shuryak/vk-chatbot/internal/models"
 )
 
 type UsersUseCase struct {
@@ -17,25 +18,60 @@ func NewUsersUseCase(repo UsersRepo) *UsersUseCase {
 // Check for implementation
 var _ Users = (*UsersUseCase)(nil)
 
-func (uc UsersUseCase) Create(ctx context.Context, u entities.User) (*entities.User, error) {
-	e, err := uc.repo.Create(ctx, u)
+func (uc UsersUseCase) Create(ctx context.Context, u models.User) (*models.User, error) {
+	e, err := uc.repo.GetByVKID(ctx, u.ID)
 	if err != nil {
-		return nil, fmt.Errorf("UsersUseCase - Create - uc.repo.Create: %v", err)
+		return nil, fmt.Errorf("UsersUseCase - Create - uc.repo.GetByID: %v", err)
 	}
 
-	return e, nil
-}
-
-func (uc UsersUseCase) GetByVKID(ctx context.Context, VKID int) (*entities.User, error) {
-	e, err := uc.repo.GetByVKID(ctx, VKID)
-	if err != nil {
-		return nil, fmt.Errorf("UsersUseCase - GetByVKID - uc.repo.GetByVKID: %v", err)
+	if e == nil {
+		e, err = uc.repo.Create(ctx, entities.User{
+			VKID:         u.ID,
+			PhotoID:      u.PhotoID,
+			Name:         u.Name,
+			Age:          u.Age,
+			City:         u.City,
+			InterestedIn: u.InterestedIn,
+			Activated:    u.Activated,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("UsersUseCase - Create - uc.repo.Create: %v", err)
+		}
 	}
 
-	return e, nil
+	res := models.User{
+		ID:           e.VKID,
+		PhotoID:      e.PhotoID,
+		Name:         e.Name,
+		Age:          e.Age,
+		City:         e.City,
+		InterestedIn: e.InterestedIn,
+		Activated:    e.Activated,
+	}
+
+	return &res, nil
 }
 
-func (uc UsersUseCase) Update(ctx context.Context, u entities.User) (*entities.User, error) {
+func (uc UsersUseCase) GetByID(ctx context.Context, ID int) (*models.User, error) {
+	e, err := uc.repo.GetByVKID(ctx, ID)
+	if err != nil {
+		return nil, fmt.Errorf("UsersUseCase - GetByID - uc.repo.GetByID: %v", err)
+	}
+
+	res := models.User{
+		ID:           e.VKID,
+		PhotoID:      e.PhotoID,
+		Name:         e.Name,
+		Age:          e.Age,
+		City:         e.City,
+		InterestedIn: e.InterestedIn,
+		Activated:    e.Activated,
+	}
+
+	return &res, nil
+}
+
+func (uc UsersUseCase) Update(ctx context.Context, u models.User) (*models.User, error) {
 	c := NewUpdateBuilder()
 	if u.PhotoID != "" {
 		c.PhotoURL(u.PhotoID)
@@ -56,10 +92,20 @@ func (uc UsersUseCase) Update(ctx context.Context, u entities.User) (*entities.U
 		c.Activated(*u.Activated)
 	}
 
-	e, err := uc.repo.Update(ctx, u.VKID, c.Columns)
+	e, err := uc.repo.Update(ctx, u.ID, c.Columns)
 	if err != nil {
 		return nil, fmt.Errorf("UsersUseCase - Update - uc.repo.Update: %v", err)
 	}
 
-	return e, nil
+	res := models.User{
+		ID:           e.VKID,
+		PhotoID:      e.PhotoID,
+		Name:         e.Name,
+		Age:          e.Age,
+		City:         e.City,
+		InterestedIn: e.InterestedIn,
+		Activated:    e.Activated,
+	}
+
+	return &res, nil
 }

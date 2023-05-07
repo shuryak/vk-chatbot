@@ -9,17 +9,17 @@ import (
 
 type (
 	Users interface {
-		Create(ctx context.Context, u entities.User) (*entities.User, error)
-		GetByVKID(ctx context.Context, VKID int) (*entities.User, error)
-		Update(ctx context.Context, u entities.User) (*entities.User, error)
+		Create(ctx context.Context, u models.User) (*models.User, error)
+		GetByID(ctx context.Context, ID int) (*models.User, error)
+		Update(ctx context.Context, u models.User) (*models.User, error)
 	}
 
 	Messenger interface {
 		Send(msg models.Message) error
 	}
 
-	UserManager interface {
-		GetUser(ID int) (*models.User, error)
+	ChatUsers interface {
+		GetByID(ID int) (*models.ChatUser, error)
 	}
 
 	Questions interface {

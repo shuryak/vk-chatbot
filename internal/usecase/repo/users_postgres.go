@@ -47,14 +47,14 @@ func (ur UsersRepo) GetByVKID(ctx context.Context, VKID int) (*entities.User, er
 		Where(squirrel.Eq{"vk_id": VKID}).
 		ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("UsersPostgres - GetByVKID - ur.Builder: %v", err)
+		return nil, fmt.Errorf("UsersPostgres - GetByID - ur.Builder: %v", err)
 	}
 
 	row := ur.Pool.QueryRow(ctx, sql, args...)
 	dbUser := entities.User{}
 	err = row.Scan(&dbUser.VKID, &dbUser.PhotoID, &dbUser.Name, &dbUser.Age, &dbUser.City, &dbUser.InterestedIn, &dbUser.Activated)
 	if err != nil {
-		return nil, fmt.Errorf("UsersPostgres - GetByVKID - row.Scan: %v", err)
+		return nil, fmt.Errorf("UsersPostgres - GetByID - row.Scan: %v", err)
 	}
 
 	return &dbUser, nil
