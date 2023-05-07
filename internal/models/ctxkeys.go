@@ -1,5 +1,6 @@
 package models
 
 const (
-	MessageCtxKey = "message"
+	MessageCtxKey  = "message"
+	QuestionCtxKey = "question"
 )

@@ -68,7 +68,7 @@ package handlers
 //		user, err := h.uuc.Create(ctx, entities.User{
 //			VKID:         obj.Message.PeerID,
 //			PhotoURL:     users[0].PhotoId,
-//			Name:         users[0].FirstName,
+//			Name:         users[0].Name,
 //			Age:          age,
 //			City:         users[0].City.Title,
 //			InterestedIn: pl.Options.InterestedIn,

@@ -19,7 +19,7 @@ func NewVKMessenger(vkapi *vkapi.VKAPI) *VKMessenger {
 // Check for implementation
 var _ Messenger = (*VKMessenger)(nil)
 
-func (vk VKMessenger) Send(msg models.Message) error {
+func (vk *VKMessenger) Send(msg models.Message) error {
 	builder := params.NewMessagesSendBuilder().
 		PeerID(msg.PeerID).
 		Message(msg.Text).
@@ -48,7 +48,7 @@ func VKKeyboard(keyboard models.Keyboard) (VKKeyboard *objects.MessagesKeyboard)
 		VKKeyboard.AddRow()
 		for j := 0; j < len(keyboard.Buttons[i]); j++ {
 			btn := keyboard.Buttons[i][j]
-			VKKeyboard.AddTextButton(btn.Text, btn.Command, string(btn.Color))
+			VKKeyboard.AddTextButton(btn.Text, btn.Payload, string(btn.Color))
 		}
 	}
 

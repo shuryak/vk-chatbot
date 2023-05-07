@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/shuryak/vk-chatbot/internal/entities"
 	"github.com/shuryak/vk-chatbot/internal/models"
+	"github.com/shuryak/vk-chatbot/internal/models/questions"
 )
 
 type (
@@ -15,6 +16,16 @@ type (
 
 	Messenger interface {
 		Send(msg models.Message) error
+	}
+
+	UserManager interface {
+		GetUser(ID int) (*models.User, error)
+	}
+
+	Questions interface {
+		Set(ctx context.Context, ID int, q questions.QuestionType) error
+		Get(ctx context.Context, ID int) (questions.QuestionType, error)
+		Delete(ctx context.Context, ID int) error
 	}
 
 	UsersRepo interface {
@@ -34,5 +45,6 @@ type (
 	QuestionsRepo interface {
 		Set(ctx context.Context, VKID int, q entities.QuestionType) error
 		Get(ctx context.Context, VKID int) (entities.QuestionType, error)
+		Delete(ctx context.Context, VKID int) error
 	}
 )

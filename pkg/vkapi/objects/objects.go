@@ -170,7 +170,7 @@ type User struct {
 	FirstName       string   `json:"first_name"`
 	LastName        string   `json:"last_name"`
 	Deactivated     string   `json:"deactivated"`
-	IsClosed        string   `json:"is_closed"`
+	IsClosed        bool     `json:"is_closed"`
 	CanAccessClosed bool     `json:"can_access_closed"`
 	About           string   `json:"about"`
 	Activities      string   `json:"activities"`

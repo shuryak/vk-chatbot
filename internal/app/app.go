@@ -6,7 +6,9 @@ import (
 	"github.com/shuryak/vk-chatbot/internal/config"
 	"github.com/shuryak/vk-chatbot/internal/handlers"
 	"github.com/shuryak/vk-chatbot/internal/handlers/payload"
+	questions2 "github.com/shuryak/vk-chatbot/internal/handlers/questions"
 	"github.com/shuryak/vk-chatbot/internal/models"
+	"github.com/shuryak/vk-chatbot/internal/models/questions"
 	"github.com/shuryak/vk-chatbot/internal/usecase"
 	"github.com/shuryak/vk-chatbot/internal/usecase/repo"
 	"github.com/shuryak/vk-chatbot/pkg/logger"
@@ -38,13 +40,18 @@ func Run(cfg *config.Config) {
 		Password:   cfg.Redis.Password,
 		DB:         0, // use default DB
 	})
-	qr := repo.NewQuestionsRepo(r, 20*time.Minute)
 
-	//h := handlers.NewHandlers(vk, *uuc, qr, l)
+	quc := usecase.NewQuestionsUseCase(repo.NewQuestionsRepo(r, 20*time.Minute))
+	messenger := usecase.NewVKMessenger(vk)
 
-	h := handlers.NewHandlers(l)
-	ph := payload.NewHandlers(usecase.NewVKMessenger(vk), *uuc, qr, l)
-	_ = h.RegisterHandler(models.StartCommand, ph.Start)
+	h := handlers.NewPayloadHandlers(quc, l)
+	ph := payload.NewHandlers(messenger, quc, usecase.NewVKUserManager(vk), *uuc, l)
+	qh := questions2.NewHandler(quc, messenger)
+	_ = h.RegisterPayloadHandler(models.StartCommand, ph.Start)
+	_ = h.RegisterPayloadHandler(models.SexCommand, ph.Sex)
+	_ = h.RegisterPayloadHandler(models.AboutCommand, ph.About)
+	_ = h.RegisterPayloadHandlerForMany(ph.Change, models.CityCommand, models.NameCommand, models.AgeCommand)
+	_ = h.RegisterQuestionHandlerForMany(qh.Edit, questions.CityQuestion, questions.NameQuestion, questions.AgeQuestion)
 
 	cb.MessageNew(h.Handle)
 

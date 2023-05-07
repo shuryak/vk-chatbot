@@ -5,14 +5,14 @@ type ButtonColor string
 const (
 	PrimaryColor   ButtonColor = "primary"
 	SecondaryColor ButtonColor = "secondary"
-	Negative       ButtonColor = "negative"
-	Positive       ButtonColor = "positive"
+	NegativeColor  ButtonColor = "negative"
+	PositiveColor  ButtonColor = "positive"
 )
 
 type Button struct {
 	Text    string
 	Color   ButtonColor
-	Command ButtonCommand
+	Payload Payload
 }
 
 type Keyboard struct {
@@ -40,12 +40,16 @@ func (k *Keyboard) AddRow() *Keyboard {
 	return k
 }
 
-func (k *Keyboard) AddButton(text string, color ButtonColor, cmd ButtonCommand) *Keyboard {
+func (k *Keyboard) AddButtonWithCommandOnly(text string, color ButtonColor, cmd ButtonCommand) *Keyboard {
+	return k.AddButton(text, color, *NewPayloadWithCommandOnly(cmd))
+}
+
+func (k *Keyboard) AddButton(text string, color ButtonColor, p Payload) *Keyboard {
 	lastRowIdx := len(k.Buttons) - 1
 	k.Buttons[lastRowIdx] = append(k.Buttons[lastRowIdx], Button{
 		Text:    text,
 		Color:   color,
-		Command: cmd,
+		Payload: p,
 	})
 
 	return k

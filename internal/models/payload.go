@@ -15,8 +15,8 @@ const (
 )
 
 type Payload struct {
-	Command ButtonCommand  `json:"command"`
-	Options PayloadOptions `json:"options,omitempty"`
+	Command *ButtonCommand  `json:"command,omitempty"`
+	Options *PayloadOptions `json:"options,omitempty"`
 }
 
 type PayloadOptions struct {
@@ -27,9 +27,16 @@ type PayloadOptions struct {
 	City         string `json:"city,omitempty"`
 }
 
-func NewPayload(command ButtonCommand) *Payload {
+func NewPayload(cmd ButtonCommand, opts PayloadOptions) *Payload {
 	return &Payload{
-		Command: command,
+		Command: &cmd,
+		Options: &opts,
+	}
+}
+
+func NewPayloadWithCommandOnly(cmd ButtonCommand) *Payload {
+	return &Payload{
+		Command: &cmd,
 	}
 }
 

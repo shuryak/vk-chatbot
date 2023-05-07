@@ -9,18 +9,14 @@ import (
 
 type Handlers struct {
 	messenger usecase.Messenger
-	uuc       usecase.UsersUseCase
-	qr        usecase.QuestionsRepo
+	q         usecase.Questions
+	um        usecase.UserManager
+	u         usecase.Users
 	l         logger.Interface
 }
 
-func NewHandlers(messenger usecase.Messenger, uuc usecase.UsersUseCase, qr usecase.QuestionsRepo, l logger.Interface) *Handlers {
-	return &Handlers{
-		messenger: messenger,
-		uuc:       uuc,
-		qr:        qr,
-		l:         l,
-	}
+func NewHandlers(messenger usecase.Messenger, q usecase.Questions, um usecase.UserManager, u usecase.Users, l logger.Interface) *Handlers {
+	return &Handlers{messenger, q, um, u, l}
 }
 
 func MessageFromContext(ctx context.Context) models.Message {
