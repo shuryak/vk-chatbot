@@ -5,8 +5,8 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/shuryak/vk-chatbot/internal/config"
 	"github.com/shuryak/vk-chatbot/internal/handlers"
-	"github.com/shuryak/vk-chatbot/internal/handlers/payload"
-	questions2 "github.com/shuryak/vk-chatbot/internal/handlers/questions"
+	"github.com/shuryak/vk-chatbot/internal/handlers/payloadHandlers"
+	"github.com/shuryak/vk-chatbot/internal/handlers/questionsHandlers"
 	"github.com/shuryak/vk-chatbot/internal/models"
 	"github.com/shuryak/vk-chatbot/internal/models/questions"
 	"github.com/shuryak/vk-chatbot/internal/usecase"
@@ -41,12 +41,12 @@ func Run(cfg *config.Config) {
 		DB:         0, // use default DB
 	})
 
-	quc := usecase.NewQuestionsUseCase(repo.NewQuestionsRepo(r, 20*time.Minute))
+	quc := usecase.NewQuestionsUseCase(repo.NewQuestionsRepo(r, 2*time.Minute))
 	messenger := usecase.NewVKMessenger(vk)
 
-	h := handlers.NewPayloadHandlers(quc, l)
-	ph := payload.NewHandlers(messenger, quc, usecase.NewVKUserManager(vk), *uuc, l)
-	qh := questions2.NewHandler(quc, *uuc, messenger)
+	h := handlers.NewRegistry(quc, l)
+	ph := payloadHandlers.NewHandlers(messenger, quc, usecase.NewVKUserManager(vk), *uuc, l)
+	qh := questionsHandlers.NewHandler(quc, *uuc, messenger)
 	_ = h.RegisterPayloadHandler(models.StartCommand, ph.Start)
 	_ = h.RegisterPayloadHandler(models.SexCommand, ph.Sex)
 	_ = h.RegisterPayloadHandler(models.CreateCommand, ph.Create)

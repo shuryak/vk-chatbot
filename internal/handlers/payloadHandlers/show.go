@@ -1,39 +1,18 @@
-package payload
+package payloadHandlers
 
 import (
 	"context"
 	"fmt"
 	"github.com/shuryak/vk-chatbot/internal/models"
-	"time"
 )
 
-func (h *Handlers) Create(ctx context.Context, p models.Payload) error {
+func (h *Handlers) Show(ctx context.Context, p models.Payload) error {
 	reqMsg := MessageFromContext(ctx)
 
-	reqUser, err := h.um.GetByID(reqMsg.PeerID)
+	user, err := h.u.GetByID(ctx, reqMsg.PeerID)
 	if err != nil {
 		return err
 	}
-
-	var age int
-	if reqUser.BirthDate != nil {
-		now := time.Now()
-		age = now.Year() - reqUser.BirthDate.Year()
-		if now.YearDay() < reqUser.BirthDate.YearDay() {
-			age--
-		}
-	}
-
-	f := false
-	user, err := h.u.Create(ctx, models.User{
-		ID:           reqUser.ID,
-		PhotoID:      reqUser.PhotoID,
-		Name:         reqUser.Name,
-		Age:          age,
-		City:         reqUser.City,
-		InterestedIn: p.Options.InterestedIn,
-		Activated:    &f,
-	})
 
 	var interestedIn string
 	if user.InterestedIn == "girls" {

@@ -1,4 +1,4 @@
-package questions
+package questionsHandlers
 
 import (
 	"context"

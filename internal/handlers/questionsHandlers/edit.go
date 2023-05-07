@@ -1,15 +1,15 @@
-package questions
+package questionsHandlers
 
 import (
 	"context"
-	"github.com/shuryak/vk-chatbot/internal/handlers/payload"
+	"github.com/shuryak/vk-chatbot/internal/handlers/payloadHandlers"
 	"github.com/shuryak/vk-chatbot/internal/models"
 	"github.com/shuryak/vk-chatbot/internal/models/questions"
 	"strconv"
 )
 
 func (h *Handler) Edit(ctx context.Context) error {
-	reqMsg := payload.MessageFromContext(ctx)
+	reqMsg := payloadHandlers.MessageFromContext(ctx)
 	q := QuestionFromContext(ctx)
 
 	user := models.User{
