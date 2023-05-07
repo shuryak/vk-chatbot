@@ -1,0 +1,3 @@
+ALTER TABLE IF EXISTS users
+DROP COLUMN age,
+DROP COLUMN activated;
