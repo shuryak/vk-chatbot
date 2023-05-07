@@ -152,7 +152,7 @@ type MessageKeyboardButton struct {
 type MessageKeyboardButtonAction struct {
 	Type    string `json:"type"`
 	Label   string `json:"label,omitempty"`
-	Payload string `json:"payloads,omitempty"`
+	Payload string `json:"payload,omitempty"`
 	Link    string `json:"link,omitempty"`
 	AppID   int    `json:"app_id,omitempty"`
 	OwnerID int    `json:"owner_id,omitempty"`
