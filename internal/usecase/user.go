@@ -37,8 +37,8 @@ func (uc UsersUseCase) GetByVKID(ctx context.Context, VKID int) (*entities.User,
 
 func (uc UsersUseCase) Update(ctx context.Context, u entities.User) (*entities.User, error) {
 	c := NewUpdateBuilder()
-	if u.PhotoURL != "" {
-		c.PhotoURL(u.PhotoURL)
+	if u.PhotoID != "" {
+		c.PhotoURL(u.PhotoID)
 	}
 	if u.Name != "" {
 		c.Name(u.Name)

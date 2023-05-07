@@ -28,7 +28,7 @@ func (h *Handlers) About(ctx context.Context, p models.Payload) error {
 	f := false
 	user, err := h.u.Create(ctx, entities.User{
 		VKID:         reqUser.ID,
-		PhotoURL:     reqUser.PhotoID,
+		PhotoID:      reqUser.PhotoID,
 		Name:         reqUser.Name,
 		Age:          age,
 		City:         reqUser.City,

@@ -2,7 +2,7 @@ package entities
 
 type User struct {
 	VKID         int
-	PhotoURL     string
+	PhotoID      string
 	Name         string
 	Age          int
 	City         string
