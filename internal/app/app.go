@@ -54,6 +54,7 @@ func Run(cfg *config.Config) {
 	_ = h.RegisterPayloadHandler(models.NextCommand, ph.Next)
 	_ = h.RegisterPayloadHandler(models.LikeCommand, ph.Like)
 	_ = h.RegisterPayloadHandler(models.DislikeCommand, ph.Dislike)
+	_ = h.RegisterPayloadHandler(models.ReciprocityCommand, ph.Reciprocity)
 	_ = h.RegisterPayloadHandlerForMany(ph.Change, models.CityCommand, models.NameCommand, models.AgeCommand)
 	_ = h.RegisterQuestionHandlerForMany(qh.Edit, questions.CityQuestion, questions.NameQuestion, questions.AgeQuestion)
 

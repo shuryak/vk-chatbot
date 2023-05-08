@@ -5,16 +5,17 @@ import "encoding/json"
 type ButtonCommand string
 
 const (
-	StartCommand   ButtonCommand = "start"
-	SexCommand     ButtonCommand = "sex"
-	CreateCommand  ButtonCommand = "create"
-	ShowCommand    ButtonCommand = "show"
-	NameCommand    ButtonCommand = "name"
-	CityCommand    ButtonCommand = "city"
-	AgeCommand     ButtonCommand = "age"
-	NextCommand    ButtonCommand = "next"
-	LikeCommand    ButtonCommand = "like"
-	DislikeCommand ButtonCommand = "dislike"
+	StartCommand       ButtonCommand = "start"
+	SexCommand         ButtonCommand = "sex"
+	CreateCommand      ButtonCommand = "create"
+	ShowCommand        ButtonCommand = "show"
+	NameCommand        ButtonCommand = "name"
+	CityCommand        ButtonCommand = "city"
+	AgeCommand         ButtonCommand = "age"
+	NextCommand        ButtonCommand = "next"
+	LikeCommand        ButtonCommand = "like"
+	DislikeCommand     ButtonCommand = "dislike"
+	ReciprocityCommand ButtonCommand = "reciprocity"
 )
 
 type Payload struct {
