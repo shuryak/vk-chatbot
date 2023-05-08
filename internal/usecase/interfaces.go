@@ -11,7 +11,14 @@ type (
 	Users interface {
 		Create(ctx context.Context, u models.User) (*models.User, error)
 		GetByID(ctx context.Context, ID int) (*models.User, error)
+		GetExceptOf(ctx context.Context, count, offset int, IDs ...int) ([]models.User, error)
 		Update(ctx context.Context, u models.User) (*models.User, error)
+	}
+
+	Sympathy interface {
+		Create(ctx context.Context, s models.Sympathy) (*models.Sympathy, error)
+		GetByUserIDs(ctx context.Context, firstUserID, secondUserID int) (*models.Sympathy, error)
+		UpdateReciprocity(ctx context.Context, id int, reciprocity bool) (*models.Sympathy, error)
 	}
 
 	Messenger interface {
@@ -31,6 +38,7 @@ type (
 	UsersRepo interface {
 		Create(ctx context.Context, u entities.User) (*entities.User, error)
 		GetByVKID(ctx context.Context, VKID int) (*entities.User, error)
+		GetExceptOf(ctx context.Context, count, offset int, IDs ...int) ([]entities.User, error)
 		Update(ctx context.Context, VKID int, columns Columns) (*entities.User, error)
 		// TODO: Full CRUD
 	}

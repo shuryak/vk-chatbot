@@ -21,7 +21,7 @@ var _ Users = (*UsersUseCase)(nil)
 func (uc UsersUseCase) Create(ctx context.Context, u models.User) (*models.User, error) {
 	e, err := uc.repo.GetByVKID(ctx, u.ID)
 	if err != nil {
-		return nil, fmt.Errorf("UsersUseCase - Create - uc.repo.GetByID: %v", err)
+		return nil, fmt.Errorf("UsersUseCase - Create - uc.repo.Create: %v", err)
 	}
 
 	if e == nil {
@@ -57,6 +57,9 @@ func (uc UsersUseCase) GetByID(ctx context.Context, ID int) (*models.User, error
 	if err != nil {
 		return nil, fmt.Errorf("UsersUseCase - GetByID - uc.repo.GetByID: %v", err)
 	}
+	if e == nil {
+		return nil, nil
+	}
 
 	res := models.User{
 		ID:           e.VKID,
@@ -69,6 +72,31 @@ func (uc UsersUseCase) GetByID(ctx context.Context, ID int) (*models.User, error
 	}
 
 	return &res, nil
+}
+
+func (uc UsersUseCase) GetExceptOf(ctx context.Context, count, offset int, IDs ...int) ([]models.User, error) {
+	e, err := uc.repo.GetExceptOf(ctx, count, offset, IDs...)
+	if err != nil {
+		return nil, fmt.Errorf("UsersUseCase - GetExceptOf - uc.repo.GetExceptOf: %v", err)
+	}
+	if e == nil {
+		return nil, nil
+	}
+
+	var res []models.User
+	for _, v := range e {
+		res = append(res, models.User{
+			ID:           v.VKID,
+			PhotoID:      v.PhotoID,
+			Name:         v.Name,
+			Age:          v.Age,
+			City:         v.City,
+			InterestedIn: v.InterestedIn,
+			Activated:    v.Activated,
+		})
+	}
+
+	return res, nil
 }
 
 func (uc UsersUseCase) Update(ctx context.Context, u models.User) (*models.User, error) {
@@ -95,6 +123,9 @@ func (uc UsersUseCase) Update(ctx context.Context, u models.User) (*models.User,
 	e, err := uc.repo.Update(ctx, u.ID, c.Columns)
 	if err != nil {
 		return nil, fmt.Errorf("UsersUseCase - Update - uc.repo.Update: %v", err)
+	}
+	if e == nil {
+		return nil, nil
 	}
 
 	res := models.User{

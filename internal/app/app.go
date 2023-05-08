@@ -32,8 +32,6 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 
-	uuc := usecase.NewUsersUseCase(repo.NewUsersRepo(pg))
-
 	r := redis.NewClient(&redis.Options{
 		Addr:       cfg.Redis.Host + cfg.Redis.Port,
 		ClientName: cfg.Redis.Name,
@@ -41,16 +39,21 @@ func Run(cfg *config.Config) {
 		DB:         0, // use default DB
 	})
 
+	uuc := usecase.NewUsersUseCase(repo.NewUsersRepo(pg))
 	quc := usecase.NewQuestionsUseCase(repo.NewQuestionsRepo(r, 2*time.Minute))
+	suc := usecase.NewSympathyUseCase(repo.NewSympathyRepo(pg))
 	messenger := usecase.NewVKMessenger(vk)
 
 	h := handlers.NewRegistry(quc, l)
-	ph := payloadHandlers.NewHandlers(messenger, quc, usecase.NewVKUserManager(vk), *uuc, l)
+	ph := payloadHandlers.NewHandlers(messenger, quc, usecase.NewVKUserManager(vk), *uuc, suc, l)
 	qh := questionsHandlers.NewHandler(quc, *uuc, messenger)
 	_ = h.RegisterPayloadHandler(models.StartCommand, ph.Start)
 	_ = h.RegisterPayloadHandler(models.SexCommand, ph.Sex)
 	_ = h.RegisterPayloadHandler(models.CreateCommand, ph.Create)
 	_ = h.RegisterPayloadHandler(models.ShowCommand, ph.Show)
+	_ = h.RegisterPayloadHandler(models.NextCommand, ph.Next)
+	_ = h.RegisterPayloadHandler(models.LikeCommand, ph.Like)
+	_ = h.RegisterPayloadHandler(models.DislikeCommand, ph.Dislike)
 	_ = h.RegisterPayloadHandlerForMany(ph.Change, models.CityCommand, models.NameCommand, models.AgeCommand)
 	_ = h.RegisterQuestionHandlerForMany(qh.Edit, questions.CityQuestion, questions.NameQuestion, questions.AgeQuestion)
 

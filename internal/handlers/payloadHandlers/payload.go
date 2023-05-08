@@ -12,11 +12,12 @@ type Handlers struct {
 	q         usecase.Questions
 	um        usecase.ChatUsers
 	u         usecase.Users
+	s         usecase.Sympathy
 	l         logger.Interface
 }
 
-func NewHandlers(messenger usecase.Messenger, q usecase.Questions, um usecase.ChatUsers, u usecase.Users, l logger.Interface) *Handlers {
-	return &Handlers{messenger, q, um, u, l}
+func NewHandlers(messenger usecase.Messenger, q usecase.Questions, um usecase.ChatUsers, u usecase.Users, s usecase.Sympathy, l logger.Interface) *Handlers {
+	return &Handlers{messenger, q, um, u, s, l}
 }
 
 func MessageFromContext(ctx context.Context) models.Message {

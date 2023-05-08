@@ -27,7 +27,7 @@ func (h *Handlers) Show(ctx context.Context, p models.Payload) error {
 	)
 	msg.Keyboard = models.NewInlineKeyboard().
 		AddRow().
-		AddButton("✅ Всё верно", models.PositiveColor, *models.NewPayloadWithCommandOnly(models.SaveCommand)).
+		AddButton("✅ Всё верно", models.PositiveColor, *models.NewPayloadWithCommandOnly(models.NextCommand)).
 		AddRow().
 		AddButton("👑 Изменить имя", models.SecondaryColor, *models.NewPayloadWithCommandOnly(models.NameCommand)).
 		AddRow().
