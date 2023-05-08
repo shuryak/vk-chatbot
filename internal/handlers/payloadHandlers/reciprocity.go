@@ -11,7 +11,7 @@ func (h *Handlers) Reciprocity(ctx context.Context, p models.Payload) error {
 
 	msg := models.NewTextMessage(
 		reqMsg.PeerID,
-		fmt.Sprintf("💑 Отличная пара! Страничка: @id%d", p.Options.ShownUserID),
+		fmt.Sprintf("💑 Отличная пара! Взаимная симпатия с @id%d", p.Options.ShownUserID),
 	)
 	err := h.messenger.Send(*msg)
 	if err != nil {

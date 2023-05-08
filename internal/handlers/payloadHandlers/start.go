@@ -13,6 +13,5 @@ func (h *Handlers) Start(ctx context.Context, p models.Payload) error {
 		AddRow().
 		AddButtonWithCommandOnly("📌 Создать анкету", models.PositiveColor, models.SexCommand)
 
-	err := h.messenger.Send(*msg)
-	return err
+	return h.messenger.Send(*msg)
 }

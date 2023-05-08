@@ -47,6 +47,7 @@ func Run(cfg *config.Config) {
 	h := handlers.NewRegistry(quc, l)
 	ph := payloadHandlers.NewHandlers(messenger, quc, usecase.NewVKUserManager(vk), *uuc, suc, l)
 	qh := questionsHandlers.NewHandler(quc, *uuc, messenger)
+
 	_ = h.RegisterPayloadHandler(models.StartCommand, ph.Start)
 	_ = h.RegisterPayloadHandler(models.SexCommand, ph.Sex)
 	_ = h.RegisterPayloadHandler(models.CreateCommand, ph.Create)
@@ -55,8 +56,21 @@ func Run(cfg *config.Config) {
 	_ = h.RegisterPayloadHandler(models.LikeCommand, ph.Like)
 	_ = h.RegisterPayloadHandler(models.DislikeCommand, ph.Dislike)
 	_ = h.RegisterPayloadHandler(models.ReciprocityCommand, ph.Reciprocity)
-	_ = h.RegisterPayloadHandlerForMany(ph.Change, models.CityCommand, models.NameCommand, models.AgeCommand)
-	_ = h.RegisterQuestionHandlerForMany(qh.Edit, questions.CityQuestion, questions.NameQuestion, questions.AgeQuestion)
+	_ = h.RegisterPayloadHandler(models.GitHubCommand, ph.GitHub)
+	_ = h.RegisterPayloadHandler(models.WhyISeeItCommand, ph.WhyISeeIt)
+	_ = h.RegisterPayloadHandlerForMany(
+		ph.Edit,
+		models.CityCommand,
+		models.NameCommand,
+		models.AgeCommand,
+		models.InterestedInCommand,
+	)
+	_ = h.RegisterQuestionHandlerForMany(
+		qh.Edit,
+		questions.CityQuestion,
+		questions.NameQuestion,
+		questions.AgeQuestion,
+	)
 
 	cb.MessageNew(h.Handle)
 

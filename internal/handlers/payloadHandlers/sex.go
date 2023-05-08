@@ -19,6 +19,5 @@ func (h *Handlers) Sex(ctx context.Context, p models.Payload) error {
 			InterestedIn: "boys",
 		}))
 
-	err := h.messenger.Send(*msg)
-	return err
+	return h.messenger.Send(*msg)
 }

@@ -41,7 +41,7 @@ func (h *Handler) Edit(ctx context.Context) error {
 	msg := models.NewTextMessage(reqMsg.PeerID, msgText)
 	msg.Keyboard = models.NewKeyboard(true).
 		AddRow().
-		AddButtonWithCommandOnly("📕 Посмотреть анкету", models.PrimaryColor, models.ShowCommand)
+		AddButtonWithCommandOnly("📕 Моя анкета", models.PrimaryColor, models.ShowCommand)
 
 	err = h.messenger.Send(*msg)
 	return err

@@ -14,16 +14,17 @@ func (h *Handlers) Show(ctx context.Context, p models.Payload) error {
 		return err
 	}
 
-	var interestedIn string
-	if user.InterestedIn == "girls" {
-		interestedIn = "девушки"
-	} else {
-		interestedIn = "парни"
+	interestedInText := "девушки"
+	negInterestedIn := "boys"
+	negInterestedInText := "парни"
+	if user.InterestedIn == "boys" {
+		interestedInText, negInterestedInText = negInterestedInText, interestedInText
+		negInterestedIn = "girls"
 	}
 
 	msg := models.NewTextMessage(
 		reqMsg.PeerID,
-		fmt.Sprintf("Имя: %s. Город: %s. Возраст: %d. Интересуют: %s.\n\nПроверь правильность данных. Если всё 👌, нажми зелёную кнопку и переходи к просмотру анкет.", user.Name, user.City, user.Age, interestedIn),
+		fmt.Sprintf("Имя: %s. Город: %s. Возраст: %d. Интересуют: %s.\n\nПроверь правильность данных. Если всё 👌, нажми зелёную кнопку и переходи к просмотру анкет.", user.Name, user.City, user.Age, interestedInText),
 	)
 	msg.Keyboard = models.NewInlineKeyboard().
 		AddRow().
@@ -33,7 +34,12 @@ func (h *Handlers) Show(ctx context.Context, p models.Payload) error {
 		AddRow().
 		AddButton("🏙️ Изменить город", models.SecondaryColor, *models.NewPayloadWithCommandOnly(models.CityCommand)).
 		AddRow().
-		AddButton("5️⃣ Изменить возраст", models.SecondaryColor, *models.NewPayloadWithCommandOnly(models.AgeCommand))
+		AddButton("5️⃣ Изменить возраст", models.SecondaryColor, *models.NewPayloadWithCommandOnly(models.AgeCommand)).
+		AddRow().
+		AddButton("⚧ Интересуют "+negInterestedInText, models.SecondaryColor, *models.NewPayload(models.InterestedInCommand, models.PayloadOptions{
+			InterestedIn: negInterestedIn,
+		}))
+
 	msg.Attachment = &models.Attachment{PhotoID: user.PhotoID}
 
 	err = h.messenger.Send(*msg)
