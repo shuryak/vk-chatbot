@@ -16,7 +16,6 @@ const (
 	InterestedInCommand ButtonCommand = "interested_in"
 	NextCommand         ButtonCommand = "next"
 	LikeCommand         ButtonCommand = "like"
-	DislikeCommand      ButtonCommand = "dislike"
 	ReciprocityCommand  ButtonCommand = "reciprocity"
 	GitHubCommand       ButtonCommand = "github"
 	WhyISeeItCommand    ButtonCommand = "why"
@@ -28,13 +27,14 @@ type Payload struct {
 }
 
 type PayloadOptions struct {
-	InterestedIn string `json:"interested_in,omitempty"`
-	PhotoURL     string `json:"photo_url,omitempty"`
-	Name         string `json:"name,omitempty"`
-	Age          int    `json:"age,omitempty"`
-	City         string `json:"city,omitempty"`
-	NoSave       *bool  `json:"no_save,omitempty"`
-	ShownUserID  int    `json:"shown_user_id,omitempty"`
+	InterestedIn   string `json:"interested_in,omitempty"`
+	PhotoURL       string `json:"photo_url,omitempty"`
+	Name           string `json:"name,omitempty"`
+	Age            int    `json:"age,omitempty"`
+	City           string `json:"city,omitempty"`
+	NoSave         *bool  `json:"no_save,omitempty"`
+	ShownUserID    int    `json:"shown_user_id,omitempty"`
+	SkipUsersCount int    `json:"skip_users_count,omitempty"`
 }
 
 func NewPayload(cmd ButtonCommand, opts PayloadOptions) *Payload {

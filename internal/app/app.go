@@ -54,7 +54,6 @@ func Run(cfg *config.Config) {
 	_ = h.RegisterPayloadHandler(models.ShowCommand, ph.Show)
 	_ = h.RegisterPayloadHandler(models.NextCommand, ph.Next)
 	_ = h.RegisterPayloadHandler(models.LikeCommand, ph.Like)
-	_ = h.RegisterPayloadHandler(models.DislikeCommand, ph.Dislike)
 	_ = h.RegisterPayloadHandler(models.ReciprocityCommand, ph.Reciprocity)
 	_ = h.RegisterPayloadHandler(models.GitHubCommand, ph.GitHub)
 	_ = h.RegisterPayloadHandler(models.WhyISeeItCommand, ph.WhyISeeIt)

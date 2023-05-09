@@ -18,21 +18,33 @@ func (h *Handlers) Next(ctx context.Context, p models.Payload) error {
 		return err
 	}
 
-	users, err := h.u.GetExceptOf(ctx, 10, 0, user.ID)
+	skipCount := 0
+	if p.Options != nil {
+		skipCount = p.Options.SkipUsersCount
+	}
+
+	users, err := h.u.GetExceptOf(ctx, 2, skipCount, user.ID)
 	if err != nil {
 		return err
 	}
 
 	var msg *models.Message
 	if len(users) != 0 {
+		if len(users) == 1 {
+			skipCount = 0
+		} else {
+			skipCount++
+		}
+
 		msg = models.NewTextMessage(reqMsg.PeerID, fmt.Sprintf("%s, %d лет, город %s.", users[0].Name, users[0].Age, users[0].City))
 		msg.Keyboard = models.NewKeyboard(true).
 			AddRow().
 			AddButton("❤", models.PositiveColor, *models.NewPayload(models.LikeCommand, models.PayloadOptions{
-				ShownUserID: users[0].ID,
+				ShownUserID:    users[0].ID,
+				SkipUsersCount: skipCount,
 			})).
-			AddButton("⛔", models.NegativeColor, *models.NewPayload(models.DislikeCommand, models.PayloadOptions{
-				ShownUserID: users[0].ID,
+			AddButton("⛔", models.NegativeColor, *models.NewPayload(models.NextCommand, models.PayloadOptions{
+				SkipUsersCount: skipCount,
 			})).
 			AddButtonWithCommandOnly("Снова он/она?", models.SecondaryColor, models.WhyISeeItCommand).
 			AddButtonWithCommandOnly("Просто кнопка", models.SecondaryColor, models.NoCommand).
